@@ -15,6 +15,7 @@ import { useParams } from "react-router-dom";
 import { useAuthState } from "react-firebase-hooks/auth";
 import SplashScreen from "../../Components/Misc/SplashScreen";
 import CompatibilityDialog from "../../Components/Shared/CompatibilityDialog";
+import AudioVideoCheckDialog from "../../Components/EventSession/AudioVideoCheckDialog";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -46,6 +47,8 @@ const useStyles = makeStyles((theme) => ({
     width: "30%"
   })
 }));
+
+
 
 const AuthDialog = ({ handleSubmit, error, loading, code }) => {
   const styles = useStyles({ loading });
@@ -198,7 +201,8 @@ const ProtectedEventSessionContainer = () => {
   const { sessionId, code } = useParams();
 
   const { showDialog, loading } = useAuth();
-  
+  const [showPreview, setShowPreview] = React.useState(true);
+
   const {
     error,
     loading: loadingEvent,
@@ -220,6 +224,10 @@ const ProtectedEventSessionContainer = () => {
     }
   }, [code, codeCheckedOnce, loginInEventFn]);
 
+  const handleClickPreview = () => {
+    setShowPreview(false);
+  }
+
   if (loading || (code && !codeCheckedOnce)) {
     return <SplashScreen />;
   }
@@ -233,7 +241,14 @@ const ProtectedEventSessionContainer = () => {
         code={code}
       />
     );
-  } else {
+  } else if (showPreview) {
+   return (
+    <AudioVideoCheckDialog 
+      handleSubmit={handleClickPreview}
+      sessionId={sessionId}  
+    />
+   )
+  }else {
     return (
       <>
         <EventSessionContainer></EventSessionContainer>
